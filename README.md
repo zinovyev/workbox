@@ -10,12 +10,14 @@ To launch the project you'll need several packages to be installed on your syste
 
 ## Configuration
 One more step to configure the vagrant box:
+
 1. Download the proper version of the VBoxGuestAdditions.iso image and put it to the `/opt/virtualbox/` directory;
 2. Open the Vagrantfile in your favorite editor. Go to the bottom of the config and
 select proper manifest files you whant to use within your project;
 
 ## Installation
 The installation is very simple:
+
 1. Just clone the repo: `git clone git@github.com:zinovyev/workbox`;
 2. Switch to the directory: `cd workbox`;
 3. Run simple command to build and launch the box: `vagrant up`;
