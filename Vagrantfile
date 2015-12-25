@@ -66,12 +66,14 @@ MESSAGE
   # Preinstall Puppet via the shell provisioning
   config.vm.provision "shell" do |shell|
     shell.inline = <<-SHELL
-      wget http://apt.puppetlabs.com/puppetlabs-release-pc1-jessie.deb && mv puppetlabs-release-pc1-jessie.deb /tmp
-      dpkg -i /tmp/puppetlabs-release-pc1-jessie.deb
-      apt-get update -y
-      apt-get install -y puppetserver
-      if [ ! -d /opt/puppetlabs/bin/ ]; then
-        echo "Failed to install puppet. Directory '/opt/puppetlabs/bin/puppet' does not exist!"; exit 1
+      if [[ ! which puppet > /dev/null ]]; then
+        wget http://apt.puppetlabs.com/puppetlabs-release-pc1-jessie.deb && mv puppetlabs-release-pc1-jessie.deb /tmp
+        dpkg -i /tmp/puppetlabs-release-pc1-jessie.deb
+        apt-get update -y
+        apt-get install -y puppetserver
+        if [ ! -d /opt/puppetlabs/bin/ ]; then
+          echo "Failed to install puppet. Directory '/opt/puppetlabs/bin/puppet' does not exist!"; exit 1
+        fi
       fi
     SHELL
   end
