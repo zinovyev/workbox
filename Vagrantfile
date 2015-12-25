@@ -66,7 +66,7 @@ MESSAGE
   # Preinstall Puppet via the shell provisioning
   config.vm.provision "shell" do |shell|
     shell.inline = <<-SHELL
-      if [[ ! which puppet > /dev/null ]]; then
+      if [ ! `which puppet > /dev/null` ]; then
         wget http://apt.puppetlabs.com/puppetlabs-release-pc1-jessie.deb && mv puppetlabs-release-pc1-jessie.deb /tmp
         dpkg -i /tmp/puppetlabs-release-pc1-jessie.deb
         apt-get update -y
