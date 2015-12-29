@@ -66,7 +66,7 @@ MESSAGE
   # Preinstall Puppet via the shell provisioning
   config.vm.provision "shell" do |shell|
     shell.inline = <<-SHELL
-      if [ ! `which puppet > /dev/null` ]; then
+      if [[ 0 != `which puppet > /dev/null && echo $?` ]]; then
         wget http://apt.puppetlabs.com/puppetlabs-release-pc1-jessie.deb && mv puppetlabs-release-pc1-jessie.deb /tmp
         dpkg -i /tmp/puppetlabs-release-pc1-jessie.deb
         apt-get update -y
@@ -82,12 +82,13 @@ MESSAGE
   config.vm.provision "puppet" do |puppet|
      # Used to determinate that Puppet version installed on guest is >=4.0
     puppet.environment_path = "provision/puppet/environments"
-    puppet.environment = "testenv"
+    puppet.environment = "testing"
 
     # Puppet options
     puppet.binary_path = "/opt/puppetlabs/bin"
-    puppet.manifests_path = "provision/puppet/manifests"
-    puppet.manifest_file = "default.pp"
+    puppet.module_path = "provision/puppet/environments/testing/modules"
+    puppet.manifests_path = "provision/puppet/environments/testing/manifests"
+    puppet.manifest_file = "init.pp"
     puppet.synced_folder_type = "nfs"
   end
 end
