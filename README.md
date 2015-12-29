@@ -12,8 +12,7 @@ To launch the project you'll need several packages to be installed on your syste
 One more step to configure the vagrant box:
 
 1. Download the proper version of the VBoxGuestAdditions.iso image and put it to the `/opt/virtualbox/` directory;
-2. Open the Vagrantfile in your favorite editor. Go to the bottom of the config and
-select proper manifest files you whant to use within your project;
+2. Open `/path-to-workbox/provision/puppet/environments/testing/manifests/init.pp` in your favorite editor and select modules you whant to use.
 
 ## Installation
 The installation is very simple:
