@@ -1,6 +1,9 @@
 # manifests/init.pp
 
 node default {
-    include nginx
+    class { 'nginx':
+        version => '1.9.9'
+    }
+    # include nginx
     # include base3
 }

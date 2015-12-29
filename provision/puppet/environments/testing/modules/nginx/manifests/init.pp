@@ -1,6 +1,8 @@
 # modules/nginx/manifests/init.pp
 
-class nginx {
+class nginx (
+    $version = '1.8.0'
+) {
 
     include base
 
@@ -12,21 +14,21 @@ class nginx {
     # Download nginx sources
     exec { 'download':
         cwd => '/tmp',
-        command => 'wget http://nginx.org/download/nginx-1.8.0.tar.gz',
-        creates => '/tmp/nginx-1.8.0.tar.gz',
+        command => "wget http://nginx.org/download/nginx-$version.tar.gz",
+        creates => "/tmp/nginx-$version.tar.gz",
         path => ['/bin', '/usr/bin'],
     } ->
 
     # Extract archive
     exec { 'extract':
         cwd => '/tmp',
-        command => 'tar xvzf  nginx-1.8.0.tar.gz',
+        command => "tar xvzf  nginx-$version.tar.gz",
         path => ['/bin', '/usr/bin'],
     } ->
 
     # Configure
     exec { 'configure':
-        cwd => '/tmp/nginx-1.8.0',
+        cwd => "/tmp/nginx-$version",
         command => 'sh -c ./configure \
             --sbin-path=/usr/local/nginx/sbin/nginx \
             --conf-path=/usr/local/nginx/nginx.conf \
@@ -42,7 +44,7 @@ class nginx {
 
     # Make
     exec { 'make':
-        cwd => '/tmp/nginx-1.8.0',
+        cwd => "/tmp/nginx-$version",
         command => 'make -j`nproc`',
         user => 'root',
         path => ['/bin', '/usr/bin'],
@@ -50,7 +52,7 @@ class nginx {
 
     # Install
     exec { 'install':
-        cwd => '/tmp/nginx-1.8.0',
+        cwd => "/tmp/nginx-$version",
         command => 'make install',
         user => 'root',
         path => ['/bin', '/usr/bin'],
