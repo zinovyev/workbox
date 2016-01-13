@@ -57,4 +57,11 @@ class nginx (
         user => 'root',
         path => ['/bin', '/usr/bin'],
     }
+
+    # Systemd file as /lib/systemd/system/nginx.service
+    file { 'systemd':
+      path => '/lib/systemd/system/nginx.service',
+      ensure => 'file',
+      source => 'puppet:///modules/nginx/files/nginx.service',
+    }
 }
