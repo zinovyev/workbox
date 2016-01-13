@@ -31,7 +31,8 @@ MESSAGE
   # The full path or URL to the VBoxGuestAdditions.iso file (should be downloaded manually).
   # The additions iso can be downloaded from the url (replace '%{version}' with your version number):
   # http://download.virtualbox.org/virtualbox/%{version}/VBoxGuestAdditions_%{version}.iso
-  config.vbguest.iso_path = "/opt/virtualbox/VBoxGuestAdditions_%{version}.iso"
+  # config.vbguest.iso_path = "/opt/virtualbox/VBoxGuestAdditions_%{version}.iso"
+  config.vbguest.iso_path = "/usr/lib/virtualbox/additions/VBoxGuestAdditions.iso"
 
   # Update VirtualBox Guest additions
   config.vbguest.auto_update = true
