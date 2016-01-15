@@ -31,7 +31,8 @@ MESSAGE
   # The full path or URL to the VBoxGuestAdditions.iso file (should be downloaded manually).
   # The additions iso can be downloaded from the url (replace '%{version}' with your version number):
   # http://download.virtualbox.org/virtualbox/%{version}/VBoxGuestAdditions_%{version}.iso
-  config.vbguest.iso_path = "/opt/virtualbox/VBoxGuestAdditions_%{version}.iso"
+  # config.vbguest.iso_path = "/opt/virtualbox/VBoxGuestAdditions_%{version}.iso"
+  config.vbguest.iso_path = "/usr/lib/virtualbox/additions/VBoxGuestAdditions.iso"
 
   # Update VirtualBox Guest additions
   config.vbguest.auto_update = true
@@ -61,7 +62,7 @@ MESSAGE
   config.vm.network "private_network", ip: "192.168.50.4"
 
   # Share an additional folder to the guest VM.
-  config.vm.synced_folder "shared", "/vagrant", type: "nfs"
+  config.vm.synced_folder "shared", "/vagrant", type: "nfs", :mount_options => ['nolock,vers=3,udp,noatime']
 
   # Preinstall Puppet via the shell provisioning
   config.vm.provision "shell" do |shell|
@@ -90,5 +91,6 @@ MESSAGE
     puppet.manifests_path = "provision/puppet/environments/testing/manifests"
     puppet.manifest_file = "init.pp"
     puppet.synced_folder_type = "nfs"
+
   end
 end
