@@ -6,12 +6,6 @@ class nginx (
 
     include base, openssl
 
-    # Check if nginx is installed
-    exec { 'if_nginx_not_installed':
-      command => '/bin/true',
-      onlyif => 'test ! -f /lib/systemd/system/nginx.service'
-    } ->
-
     # Create www group
     group { 'www':
       ensure => 'present',
@@ -26,6 +20,12 @@ class nginx (
     # Install additional libraries
     package { ['libpcre3', 'libpcre3-dev', 'zlib1g', 'zlib1g-dev']:
         ensure => installed,
+    } ->
+
+    # Check if nginx is installed
+    exec { 'if_nginx_not_installed':
+      command => '/bin/true',
+      onlyif => 'test ! -f /lib/systemd/system/nginx.service'
     } ->
 
     # Download nginx sources
@@ -90,11 +90,17 @@ class nginx (
     } ->
 
     # Create pid file
-    file { 'pid_file':
-      path => '/usr/local/nginx/logs/nginx.pid',
-      ensure  => 'present',
-      replace => 'no',
-      content => "",
+#    file { 'pid_file':
+#      path => '/usr/local/nginx/logs/nginx.pid',
+#      ensure  => 'present',
+#      replace => 'no',
+#      content => "",
+#    } ->
+
+      # Install
+    exec { 'pid_file':
+      cwd => "/usr/local/nginx/logs/",
+      command => 'touch nginx.pid',
     } ->
 
     # Ensure the service is running
