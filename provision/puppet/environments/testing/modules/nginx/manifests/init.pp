@@ -6,6 +6,9 @@ class nginx (
 
     include base, openssl
 
+    # Define variables
+    $worker_processes = $processorcount * 2;
+
     # Create www group
     group { 'www':
       ensure => 'present',
@@ -83,11 +86,40 @@ class nginx (
     } ->
 
     # Systemd file as /lib/systemd/system/nginx.service
-    file { 'systemd':
+    file { 'systemd_service':
       path => '/lib/systemd/system/nginx.service',
       ensure => 'file',
       source => 'puppet:///modules/nginx/nginx.service',
     } ->
+
+    # Nginx main config
+    file { '/etc/nginx/nginx.conf':
+      ensure  => file,
+      content => template('nginx/nginx.conf.erb'),
+      # Loads /etc/puppetlabs/code/environments/production/modules/ntp/templates/ntp.conf.erb
+    } ->
+
+    # Create a directory for available sites
+    file { '/etc/nginx/sites-available':
+      ensure => 'directory',
+    } ->
+
+    # Create a directory for enabled sites
+    file { '/etc/nginx/sites-enabled':
+      ensure => 'directory',
+    } ->
+
+    # Create the default config
+    file { '/etc/nginx/sites-available/default.conf':
+      ensure => 'file',
+      source => 'puppet:///modules/nginx/default.conf',
+    } ->
+
+    # preferred symlink syntax
+    file { '/etc/nginx/sites-enabled/default.conf':
+      ensure => 'link',
+      target => '/etc/nginx/sites-available/default.conf',
+    }
 
     # Create pid file
 #    file { 'pid_file':
