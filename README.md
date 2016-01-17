@@ -28,18 +28,18 @@ To test the modules locally (no need to run `vagrant reload --provision`):
 
 1. Add path to the puppet executable to your root's pathes:
 ```bash
-$ sudo su
-# echo "export PATH=$PATH:/opt/puppetlabs/bin" >> ~/.bashrc
+sudo su
+echo "export PATH=$PATH:/opt/puppetlabs/bin" >> ~/.bashrc
 ```
 
 2. Reload root's profile config:
 ```bash
-# source ~/.bashrc
+source ~/.bashrc
 ```
 
 3. And run `puppet apply` command with specific options:
 ```bash
-# puppet apply /tmp/vagrant-puppet/environments/testing/manifests/init.pp \
+puppet apply /tmp/vagrant-puppet/environments/testing/manifests/init.pp \
 --modulepath /tmp/vagrant-puppet/environments/testing/modules
 --verbose \
 ```
