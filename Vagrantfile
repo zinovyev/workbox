@@ -11,6 +11,18 @@ required_plugins.each do |plugin|
   end
 end
 
+# Detect the host OS distro
+hostname = 'unknown'
+if "0" == `which pacman &>/dev/null ; echo $?`.strip then
+  hostname = 'archlinux'
+elsif "0" == `which apt-get &>/dev/null ; echo $?`.strip then
+  hostname = 'debian'
+elsif "0" == `which yum &>/dev/null; echo $?`.strip then
+  hostname = 'rhel'
+elsif "0" == `which homebrew &>/dev/null; echo $?`.strip then
+  hostname = 'osx'
+end
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -32,7 +44,15 @@ MESSAGE
   # The additions iso can be downloaded from the url (replace '%{version}' with your version number):
   # http://download.virtualbox.org/virtualbox/%{version}/VBoxGuestAdditions_%{version}.iso
   # config.vbguest.iso_path = "/opt/virtualbox/VBoxGuestAdditions_%{version}.iso"
-  config.vbguest.iso_path = "/usr/lib/virtualbox/additions/VBoxGuestAdditions.iso"
+  if hostname == "archlinux" then
+    config.vbguest.iso_path = "/usr/lib/virtualbox/additions/VBoxGuestAdditions.iso"
+  else
+    print "OS type could not be detected. Failed to install Guest Additions module.\n"
+    exit
+  end
+
+  # Reboot on success
+  config.vbguest.auto_reboot = true
 
   # Update VirtualBox Guest additions
   config.vbguest.auto_update = true

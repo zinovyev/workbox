@@ -22,3 +22,24 @@ The installation is very simple:
 3. Run simple command to build and launch the box: `vagrant up`;
 4. That's it! The box is up and running. Type `vagrant ssh` to ssh to the system.
 5. Use folder called `shared` on your host to work with files on the guest virtual machine (the path will be `/vagrant`).
+
+## Testing your environment
+To test the modules locally (no need to run `vagrant reload --provision`):
+
+1. Add path to the puppet executable to your root's pathes:
+```bash
+$ sudo su
+# echo "export PATH=$PATH:/opt/puppetlabs/bin" >> ~/.bashrc
+```
+
+2. Reload root's profile config:
+```bash
+# source ~/.bashrc
+```
+
+3. And run `puppet apply` command with specific options:
+```bash
+# puppet apply /tmp/vagrant-puppet/environments/testing/manifests/init.pp \
+--modulepath /tmp/vagrant-puppet/environments/testing/modules
+--verbose \
+```
