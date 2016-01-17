@@ -1,9 +1,6 @@
 #user  nobody;
 worker_processes  <%= @worker_processes %>;
 
-# If accept_mutex is enabled, worker processes will accept new connections by turn.
-accept_mutex on;
-
 # Enables or disables the use of “just-in-time compilation” (PCRE JIT) for the regular expressions known by the time of configuration parsing.
 pcre_jit on;
 
@@ -15,6 +12,9 @@ pcre_jit on;
 
 events {
     worker_connections  1024;
+
+    # If accept_mutex is enabled, worker processes will accept new connections by turn.
+    accept_mutex on;
 }
 
 http {

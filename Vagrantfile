@@ -105,6 +105,9 @@ MESSAGE
     puppet.environment_path = "provision/puppet/environments"
     puppet.environment = "testing"
 
+    # The puppet path on the guest machine
+    # puppet.temp_dir = ""
+
     # Puppet options
     puppet.binary_path = "/opt/puppetlabs/bin"
     puppet.module_path = "provision/puppet/environments/testing/modules"
