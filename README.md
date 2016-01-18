@@ -43,3 +43,7 @@ puppet apply /tmp/vagrant-puppet/environments/testing/manifests/init.pp \
 --modulepath /tmp/vagrant-puppet/environments/testing/modules
 --verbose \
 ```
+
+## Troubleshooting
+### NFS shared folders error
+If you get an error while mouting nfs shared folders, try to edit your `/etc/exports` file and to remove all the entries added by vagrant. Everything should work fine after running `vagrant reload` command again.
