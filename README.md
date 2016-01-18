@@ -40,8 +40,8 @@ source ~/.bashrc
 3. And run `puppet apply` command with specific options:
 ```bash
 puppet apply /tmp/vagrant-puppet/environments/testing/manifests/init.pp \
---modulepath /tmp/vagrant-puppet/environments/testing/modules
---verbose \
+--modulepath /tmp/vagrant-puppet/environments/testing/modules \
+--verbose
 ```
 
 ## Troubleshooting
