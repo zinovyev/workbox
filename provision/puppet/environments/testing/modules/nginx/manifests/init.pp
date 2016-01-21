@@ -1,29 +1,26 @@
 # modules/nginx/manifests/init.pp
 
 class nginx (
-    $version = '1.8.0',
-    $pid_file = '/usr/local/nginx/logs/nginx.pid'
+    $nginx_version = '1.8.0',
+    $nginx_pid_file = '/usr/local/nginx/logs/nginx.pid',
+    $nginx_user = 'www',
+    $nginx_group = 'www',
 ) {
 
-  include base, openssl
+  include toolbox, openssl
 
   # Define variables
   $worker_processes = $processorcount * 2;
 
   # Create www group
-  group { 'www':
+  group { $nginx_group:
     ensure => 'present',
   }
 
   # Create www user
-  user { 'www':
+  user { $nginx_user:
     ensure => 'present',
-    groups => 'www',
-  }
-
-  # Install additional libraries
-  package { ['libpcre3', 'libpcre3-dev', 'zlib1g', 'zlib1g-dev']:
-      ensure => installed,
+    groups => $nginx_group,
   }
 
   #
@@ -44,22 +41,6 @@ class nginx (
         cwd => '/tmp',
         command => "tar xvzf  nginx-$version.tar.gz",
         require => Exec['download_nginx'],
-      }
-
-      # Get pcre sources
-      exec {'pcre_lib_sources':
-        cwd => "/tmp/nginx-$version",
-        command => "apt-get source libpcre3 && mv pcre3-* pcre3",
-        onlyif => ['test ! -d pcre3'],
-        require => Exec['extract_nginx'],
-      }
-
-      # Get zlib1g source
-      exec {'zlib1g_lib_sources':
-        cwd => "/tmp/nginx-$version",
-        command => "apt-get source zlib1g && mv zlib-* zlib",
-        onlyif => ['test ! -d zlib'],
-        require => Exec['extract_nginx'],
       }
 
       # Configure

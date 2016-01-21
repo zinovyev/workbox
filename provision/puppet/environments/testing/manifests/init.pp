@@ -6,6 +6,7 @@ Exec {
 }
 
 node default {
+    class { 'toolbox': }
     class { 'nginx':
         version => '1.9.9'
     }
