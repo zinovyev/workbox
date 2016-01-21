@@ -46,4 +46,8 @@ puppet apply /tmp/vagrant-puppet/environments/testing/manifests/init.pp \
 
 ## Troubleshooting
 ### NFS shared folders error
-If you get an error while mouting nfs shared folders, try to edit your `/etc/exports` file and to remove all the entries added by vagrant. Everything should work fine after running `vagrant reload` command again.
+If you're stacked with the issue when `vagrant up` command hangs with the message "Mounting NFS shared folders..." for a while, try to perform those steps:
+* Try either to restart nfs service (`sudo systemctl restart nfs-server.service` for me in Arch);
+* Or to remove Vagrant entries from /etc/exports
+(they are surrounded with #VAGRANT-BEGIN: ... #VAGRANT-END: comments)
+and then to restart the service and the vagrant instance (run `vagrant reload` from your projects folder).
