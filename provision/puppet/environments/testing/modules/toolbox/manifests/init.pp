@@ -25,6 +25,7 @@ class toolbox {
 
   # Packages required for building tools
   $build_packages = [
+    'software-properties-common', # Contains the `apt-add-repository` command
     'build-essential',
     'automake',
     'autoconf',
