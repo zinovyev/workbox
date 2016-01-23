@@ -2,7 +2,7 @@
 
 class nginx (
     $version = '1.8.0',
-    $user = 'www',
+    $owner = 'www',
     $group = 'www',
     $pid_file_dir = '/var/log/nginx/nginx.pid',
     $error_log_dir = '/var/log/nginx/',
@@ -23,7 +23,7 @@ class nginx (
   }
 
   # Create www user
-  user { $user:
+  user { $owner:
     ensure => 'present',
     groups => $group,
   }
@@ -35,39 +35,39 @@ class nginx (
 
     # Precreate pid file dir and file
     file { $pid_file_dir:
-        insure => directory,
+        ensure => directory,
     }
     file { 'pid_file':
       path => $pid_file,
       ensure  => 'file',
       content => "",
-      user => 'root',
+      owner => 'root',
       group => 'root',
       mode => '0700',
     }
 
     # Precreate error log dir and file
     file { $error_log_dir:
-        insure => directory,
+        ensure => directory,
     }
     file { 'error_log':
       path => $error_log,
       ensure  => 'file',
       content => "",
-      user => $user,
+      owner => $owner,
       group => $group,
       mode => '0664',
     }
 
     # Precreate access log dir and file
     file { $access_log_dir:
-        insure => directory,
+        ensure => directory,
     }
     file { 'access_log':
       path => $access_log,
       ensure  => 'file',
       content => "",
-      user => $user,
+      owner => $owner,
       group => $group,
       mode => '0664',
     }
@@ -93,7 +93,7 @@ class nginx (
       $nginx_configure_command = "sh -c './configure \
         --sbin-path=/usr/sbin/nginx \
         --conf-path=/etc/nginx/nginx.conf \
-        --user=$user \
+        --user=$owner \
         --group=$group \
         --pid-path=$pid_file \
         --error-log-path=$error_log \
@@ -102,19 +102,19 @@ class nginx (
       # Enable ssl module
       if  with_ssl_module == true {
           $nginx_configure_command = $nginx_configure_command" \
-            --with-http_ssl_module
+            --with-http_ssl_module \
           "
       }
 
       # Enable pcre3 support
       if  with_pcre3 == true {
-          $prcre3_source_dir = '/tmp/pcre3_source'
-          class { 'nginx::pcre3_source':
-            path = $prcre3_source_dir
+          $pcre3_source_dir = '/tmp/pcre3_source'
+          class { "nginx::pcre3_source":
+            path => $pcre3_source_dir,
           }
           $nginx_configure_command = $nginx_configure_command" \
-            --with-pcre=$prcre3_source_dir \
-            --with-pcre-jit
+            --with-pcre=$pcre3_source_dir \
+            --with-pcre-jit \
           "
       }
 
