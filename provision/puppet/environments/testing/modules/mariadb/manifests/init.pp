@@ -41,6 +41,7 @@ class mariadb {
     content => template('mariadb/mariadb.cnf.erb'),
     notify  => Service['mysql.service'],
     require => File['/etc/mysql/conf.d/mariadb.cnf.bkp'],
+    before => Exec['mysql_enable_changes'],
   }
 
   # Drop anonimous user
