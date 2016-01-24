@@ -1,0 +1,34 @@
+# modules/self-signed_ssl/manifests/init.pp
+
+class ss_ssl (
+  $cert_dir = '/etc/ssl/certs/',
+  $cert_file = 'local.dev.crt',
+  $cert_key_file = 'local.dev.key',
+  $subj_country = 'RU',
+  $subj_state = 'Moscow',
+  $subj_locality = 'Moscow',
+  $subj_organization = 'Example',
+  $subj_unit = 'Example Unit',
+  $subj_domain = 'example.org',
+  $subj_email = 'name@example.org',
+) {
+  class { 'openssl': }
+
+  # Check if certificates directory exists
+  file { $cert_dir:
+    ensure => 'directory',
+  }
+
+  # Generate a self-signed sertificate file
+  exec { 'generate_self_signed_ssl':
+    command => "openssl req -newkey rsa:4096 -days 365 -nodes -x509 \
+      -subj '/C=$subj_country/ST=$subj_state/L=$subj_locality/O=$subj_organization/OU=$subj_unit/CN=$subj_domain/emailAddress=$subj_email' \
+      -keyout $cert_key_file \
+      -out $cert_file",
+    require => [
+      Class['openssl'],
+      File[$cert_dir],
+    ],
+    onlyif  => "test ! -e $cert_file",
+  }
+}

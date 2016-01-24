@@ -15,4 +15,5 @@ Exec {
 node default {
   class { 'toolbox': }
   class { 'mariadb': }
+  class { 'ss_ssl': }
 }
