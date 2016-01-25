@@ -15,5 +15,7 @@ Exec {
 node default {
   class { 'toolbox': }
   class { 'mariadb': }
-  class { 'ss_ssl': }
+  class { 'ss_ssl':
+    cert_dir => '/etc/ssl/certs2/foo/bar',
+  }
 }
