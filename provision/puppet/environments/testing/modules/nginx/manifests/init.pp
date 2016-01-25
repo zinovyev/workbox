@@ -54,7 +54,7 @@ class nginx (
     command => "mkdir -p ${log_dir}",
     onlyif  => "test ! -e ${log_dir}",
   }
-  file { 'error_log':
+  file { 'nginx_error_log':
     path    => $error_log,
     ensure  => 'file',
     content => "",
@@ -65,7 +65,7 @@ class nginx (
   }
 
   # Create access log file
-  file { 'access_log':
+  file { 'nginx_access_log':
     path    => $access_log,
     ensure  => 'file',
     content => "",
@@ -76,7 +76,7 @@ class nginx (
   }
 
   # Compile and install nginx
-  if $nginx_installed == false {
+  if $is_nginx_installed == false {
 
     # Download nginx sources
     exec { 'download_nginx':
@@ -90,6 +90,7 @@ class nginx (
       cwd     => '/tmp',
       command => "tar xvzf nginx-${version}.tar.gz",
       require => Exec['download_nginx'],
+      creates => "/tmp/nginx-${version}",
     }
 
     # Prepare nginx configure command
@@ -100,13 +101,16 @@ class nginx (
         --group=${group} \
         --pid-path=${pid_file} \
         --error-log-path=${error_log} \
-        --http-log-path=${access_log}"
+        --http-log-path=${access_log}'"
 
     exec { 'configure_nginx':
       cwd     => "/tmp/nginx-${version}",
       command => $nginx_configure_command,
       require => [
         Exec['extract_nginx'],
+        File['nginx_error_log'],
+        File['nginx_access_log'],
+        File['nginx_pid_file']
       ],
     }
 
@@ -123,12 +127,7 @@ class nginx (
       command => 'make install',
       require => Exec['make_nginx'],
     }
-
   }
-
-  #
-  # -- Configure nginx
-  #
 
   # Nginx main config
   file { '/etc/nginx/nginx.conf':
@@ -164,16 +163,12 @@ class nginx (
     notify  => Service['nginx.service'],
   }
 
-  #
-  # -- Set up nginx service
-  #
-
   # Systemd file as /lib/systemd/system/nginx.service
   file { 'nginx_service_file':
     path    => '/lib/systemd/system/nginx.service',
     ensure  => 'file',
     content => template('nginx/nginx.service.erb'),
-    require => File['pid_file'],
+    require => File['nginx_pid_file'],
   }
 
   # Ensure the service is running
@@ -186,5 +181,4 @@ class nginx (
       File['nginx_service_file'],
     ]
   }
-
 }
