@@ -21,6 +21,7 @@ class toolbox {
     name   => 'ntp',
     ensure => running,
     enable => true,
+    require => Package[$base_packages],
   }
 
   # Packages required for building tools

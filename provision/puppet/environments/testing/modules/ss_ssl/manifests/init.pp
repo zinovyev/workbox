@@ -30,7 +30,7 @@ class ss_ssl (
     cwd     => $cert_dir,
     require => [
       Class['openssl'],
-      File[$cert_dir],
+      Exec['cert_dir'],
     ],
     onlyif  => [
       "test ! -e ${cert_dir}/${cert_file}",
