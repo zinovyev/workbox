@@ -4,9 +4,8 @@ class nginx (
   $version = '1.8.0',
   $owner = 'www',
   $group = 'www',
-  $pid_file_dir = '/var/log/nginx/nginx.pid',
-  $error_log_dir = '/var/log/nginx/',
-  $access_log_dir = '/var/log/nginx/access.log',
+  $pid_dir = '/var/log/nginx',
+  $log_dir = '/var/log/nginx',
   $with_ssl_module = true,
   $with_pcre3 = true,
   $with_zlib = true,
@@ -29,26 +28,31 @@ class nginx (
   }
 
   # File names
-  $pid_file = "${pid_file_dir}/nginx.pid"
-  $error_log = "${error_log_dir}/error.log"
-  $access_log = "${access_log_dir}/access.log"
+  $pid_file = "${pid_dir}/nginx.pid"
+  $error_log = "${log_dir}/error.log"
+  $access_log = "${log_dir}/access.log"
 
-  # Precreate pid file dir and file
-  file { $pid_file_dir:
-    ensure => directory,
+  # Create pid file
+  exec { 'nginx_pid_dir':
+    creates => $pid_dir,
+    command => "mkdir -p ${pid_dir}",
+    onlyif  => "test ! -e ${pid_dir}",
   }
-  file { 'pid_file':
+  file { 'nginx_pid_file':
     path    => $pid_file,
     ensure  => 'file',
     content => "",
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
+    require => Exec['nginx_pid_dir']
   }
 
-  # Precreate error log dir and file
-  file { $error_log_dir:
-    ensure => directory,
+  # Create error log file
+  exec { 'nginx_log_dir':
+    creates => $log_dir,
+    command => "mkdir -p ${log_dir}",
+    onlyif  => "test ! -e ${log_dir}",
   }
   file { 'error_log':
     path    => $error_log,
@@ -57,12 +61,10 @@ class nginx (
     owner   => $owner,
     group   => $group,
     mode    => '0664',
+    require => Exec['nginx_log_dir']
   }
 
-  # Precreate access log dir and file
-  file { $access_log_dir:
-    ensure => directory,
-  }
+  # Create access log file
   file { 'access_log':
     path    => $access_log,
     ensure  => 'file',
@@ -70,85 +72,54 @@ class nginx (
     owner   => $owner,
     group   => $group,
     mode    => '0664',
+    require => Exec['nginx_log_dir']
   }
 
-  # Compile and install nginx from source
+  # Compile and install nginx
   if $nginx_installed == false {
 
     # Download nginx sources
     exec { 'download_nginx':
       cwd     => '/tmp',
-      command => "wget http://nginx.org/download/nginx-$version.tar.gz",
-      creates => "/tmp/nginx-$version.tar.gz",
+      command => "wget http://nginx.org/download/nginx-${version}.tar.gz",
+      creates => "/tmp/nginx-${version}.tar.gz",
     }
 
     # Extract archive
     exec { 'extract_nginx':
       cwd     => '/tmp',
-      command => "tar xvzf nginx-$version.tar.gz",
+      command => "tar xvzf nginx-${version}.tar.gz",
       require => Exec['download_nginx'],
     }
 
-    # Configure
+    # Prepare nginx configure command
     $nginx_configure_command = "sh -c './configure \
         --sbin-path=/usr/sbin/nginx \
         --conf-path=/etc/nginx/nginx.conf \
-        --user=$owner \
-        --group=$group \
-        --pid-path=$pid_file \
-        --error-log-path=$error_log \
-        --http-log-path=$access_log"
-
-    # Enable ssl module
-    if  with_ssl_module == true {
-      $nginx_configure_command = $nginx_configure_command" \
-            --with-http_ssl_module \
-          "
-    }
-
-    # Enable pcre3 support
-    if  with_pcre3 == true {
-      $pcre3_source_dir = '/tmp/pcre3_source'
-      class { "nginx::pcre3_source":
-        path => $pcre3_source_dir,
-      }
-      $nginx_configure_command = $nginx_configure_command" \
-            --with-pcre=$pcre3_source_dir \
-            --with-pcre-jit \
-          "
-    }
-
-    # Enable zlib support
-    if  with_zlib == true {
-      $zlib_source_dir = '/tmp/zlib_source'
-      class { 'nginx::zlib_source':
-      path = $zlib_source_dir
-      }
-      $nginx_configure_command = $nginx_configure_command" \
-            --with-zlib=$zlib_source_dir
-          "
-    }
+        --user=${owner} \
+        --group=${group} \
+        --pid-path=${pid_file} \
+        --error-log-path=${error_log} \
+        --http-log-path=${access_log}"
 
     exec { 'configure_nginx':
-      cwd     => "/tmp/nginx-$version",
+      cwd     => "/tmp/nginx-${version}",
       command => $nginx_configure_command,
       require => [
         Exec['extract_nginx'],
-        # Exec['pcre_lib_sources'],
-        # Exec['zlib1g_lib_sources'],
       ],
     }
 
     # Make
     exec { 'make_nginx':
-      cwd     => "/tmp/nginx-$version",
+      cwd     => "/tmp/nginx-${version}",
       command => 'make -j`nproc`',
       require => Exec['configure_nginx'],
     }
 
     # Install
     exec { 'install_nginx':
-      cwd     => "/tmp/nginx-$version",
+      cwd     => "/tmp/nginx-${version}",
       command => 'make install',
       require => Exec['make_nginx'],
     }
@@ -182,7 +153,7 @@ class nginx (
     require => File['/etc/nginx/sites-available']
   }
 
-  # preferred symlink syntax
+  # Enable default site
   file { '/etc/nginx/sites-enabled/default.conf':
     ensure  => 'link',
     target  => '/etc/nginx/sites-available/default.conf',
@@ -198,7 +169,7 @@ class nginx (
   #
 
   # Systemd file as /lib/systemd/system/nginx.service
-  file { 'nginx.service':
+  file { 'nginx_service_file':
     path    => '/lib/systemd/system/nginx.service',
     ensure  => 'file',
     content => template('nginx/nginx.service.erb'),
@@ -211,8 +182,8 @@ class nginx (
     ensure  => 'running',
     require => [
       File['/etc/nginx/nginx.conf'],
-      File['pid_file'],
-      File['nginx.service'],
+      File['nginx_pid_file'],
+      File['nginx_service_file'],
     ]
   }
 
