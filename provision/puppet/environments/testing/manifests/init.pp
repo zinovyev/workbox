@@ -14,8 +14,10 @@ Exec {
 }
 
 node default {
+
+  class { 'stdlib': }
   class { 'toolbox': }
-  class { 'toolbox::stdlib': }
+#  class { 'toolbox::stdlib': }
   class { 'mariadb': }
   class { 'ss_ssl':
     cert_dir => '/etc/ssl/certs2/foo/bar',

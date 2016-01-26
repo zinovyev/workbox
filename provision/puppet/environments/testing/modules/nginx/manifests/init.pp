@@ -10,9 +10,6 @@ class nginx (
   $with_pcre3 = true,
   $with_zlib = true,
 ) {
-
-  # include toolbox, openssl
-
   # Define variables
   $worker_processes = $processorcount * 2;
 
@@ -94,18 +91,28 @@ class nginx (
     }
 
     # Prepare nginx configure command
-    $nginx_configure_command = "sh -c './configure \
-        --sbin-path=/usr/sbin/nginx \
-        --conf-path=/etc/nginx/nginx.conf \
-        --user=${owner} \
-        --group=${group} \
-        --pid-path=${pid_file} \
-        --error-log-path=${error_log} \
-        --http-log-path=${access_log}'"
+    $nginx_options = [
+      "--sbin-path=/usr/sbin/nginx",
+      "--conf-path=/etc/nginx/nginx.conf",
+      "--user=${owner}",
+      "--group=${group}",
+      "--pid-path=${pid_file}",
+      "--error-log-path=${error_log}",
+      "--http-log-path=${access_log}",
+    ]
 
+    # Enable ssl module
+    if $with_ssl_module == true {
+      $ssl_options = ['--with-http_ssl_module']
+    } else {
+      $ssl_options = []
+    }
+
+    # Build nginx options
+    $nginx_options_string = join(concat($nginx_options, $ssl_options), " ")
     exec { 'configure_nginx':
       cwd     => "/tmp/nginx-${version}",
-      command => $nginx_configure_command,
+      command => "sh -c './configure' $nginx_options",
       require => [
         Exec['extract_nginx'],
         File['nginx_error_log'],
@@ -130,19 +137,28 @@ class nginx (
   }
 
   # Nginx main config
+  $nginx_etc_dir = '/etc/nginx'
+  exec { 'nginx_etc_dir':
+    creates => $nginx_etc_dir,
+    command => "mkdir -p ${nginx_etc_dir}",
+    onlyif  => "test ! -e ${nginx_etc_dir}",
+  }
   file { '/etc/nginx/nginx.conf':
     ensure  => file,
     content => template('nginx/nginx.conf.erb'),
+    require => Exec['nginx_etc_dir'],
   }
 
   # Create a directory for available sites
   file { '/etc/nginx/sites-available':
-    ensure => 'directory',
+    ensure  => 'directory',
+    require => Exec['nginx_etc_dir'],
   }
 
   # Create a directory for enabled sites
   file { '/etc/nginx/sites-enabled':
-    ensure => 'directory',
+    ensure  => 'directory',
+    require => Exec['nginx_etc_dir'],
   }
 
   # Create the default config
