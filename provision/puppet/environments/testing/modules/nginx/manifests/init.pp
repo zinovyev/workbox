@@ -108,8 +108,37 @@ class nginx (
       $ssl_options = []
     }
 
+    # Enable pcre3 support
+    if $with_pcre3 == true {
+      $pcre3_path = '/tmp/pcre3_source'
+      class { 'pcre3_source':
+        path   => $pcre3_path,
+        before => Exec['configure_nginx'],
+      }
+      $pcre3_options = [
+        "--with-pcre=${pcre3_path}",
+        '--with-pcre-jit',
+      ]
+    } else {
+      $pcre3_options = []
+    }
+
+    # Enable zlib support
+    if $with_zlib == true {
+      $zlib_path = '/tmp/zlib_source'
+      class { 'zlib_source':
+        path   => $zlib_path,
+        before => Exec['configure_nginx'],
+      }
+      $zlib_options = [
+        "--with-zlib=${zlib_path}",
+      ]
+    } else {
+      $zlib_options = []
+    }
+
     # Build nginx options
-    $nginx_options_string = join(concat($nginx_options, $ssl_options), " ")
+    $nginx_options_string = join(concat($nginx_options, $ssl_options, $pcre3_options, $zlib_options), " ")
     exec { 'configure_nginx':
       cwd     => "/tmp/nginx-${version}",
       command => "sh -c './configure $nginx_options_string'",
