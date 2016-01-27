@@ -13,12 +13,14 @@ class ss_ssl (
   $subj_email = 'name@example.org',
 ) {
   class { 'openssl': }
+  include stdlib
 
   # Sinse puppet does not allow recursive directories by default, you should use exec
-  exec { 'cert_dir':
+  $cert_dir_hash = md5($cert_dir)
+  exec { "cert_dir_${cert_dir_hash}":
     creates => $cert_dir,
     command => "mkdir -p ${cert_dir}",
-    onlyif => "test ! -e ${cert_dir}",
+    onlyif  => "test ! -e ${cert_dir}",
   }
 
   # Generate a self-signed sertificate file
@@ -30,7 +32,7 @@ class ss_ssl (
     cwd     => $cert_dir,
     require => [
       Class['openssl'],
-      Exec['cert_dir'],
+      Exec["cert_dir_${cert_dir_hash}"],
     ],
     onlyif  => [
       "test ! -e ${cert_dir}/${cert_file}",

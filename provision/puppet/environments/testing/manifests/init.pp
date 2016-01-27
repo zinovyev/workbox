@@ -19,8 +19,11 @@ node default {
   class { 'toolbox': }
 #  class { 'toolbox::stdlib': }
   class { 'mariadb': }
-  class { 'ss_ssl':
-    cert_dir => '/etc/ssl/certs2/foo/bar',
-  }
+#  class { 'ss_ssl':
+#    cert_dir => '/etc/ssl/certs2/foo/bar',
+#  }
   class { 'nginx': }
+  class { 'nginx::ssl_nginx':
+#    cert_dir => '/etc/nginx/certs',
+  }
 }
