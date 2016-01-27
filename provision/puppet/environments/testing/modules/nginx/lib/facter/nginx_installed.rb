@@ -4,7 +4,7 @@
 
 require 'facter'
 
-Facter.add("nginx_installed") do
+Facter.add("is_nginx_installed") do
   setcode do
     File.exists?('/usr/sbin/nginx')
   end
