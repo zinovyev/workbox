@@ -111,7 +111,7 @@ class nginx (
     # Enable pcre3 support
     if $with_pcre3 == true {
       $pcre3_path = '/tmp/pcre3_source'
-      class { 'pcre3_source':
+      class { 'nginx::pcre3_source':
         path   => $pcre3_path,
         before => Exec['configure_nginx'],
       }
@@ -126,7 +126,7 @@ class nginx (
     # Enable zlib support
     if $with_zlib == true {
       $zlib_path = '/tmp/zlib_source'
-      class { 'zlib_source':
+      class { 'nginx::zlib_source':
         path   => $zlib_path,
         before => Exec['configure_nginx'],
       }
