@@ -1,6 +1,17 @@
 # Workbox
 This the sample workbox for development based on vagrant and puppet (puppet apply provisioner).
 
+## About
+This box provides a bunch of puppet modules that I use by myself in my projects. It's not fully complete yet.
+In production the modules should be installed via the puppet master node used together with child nodes.
+The list of already built modules:
+* [toolbox](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/toolbox): provides base packages (some of them are used for building other packages)
+* [mariadb](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/mariadb): MariaDB package installation
+* [nginx](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/nginx): compiles Nginx server from sources
+* [nginx_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/nginx): exanple of an nginx config with self-signed certificate on board
+* [openssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/openssl): OpenSSL packages installation
+* [ss_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/ss_ssl): generation of an self-signed certificate
+
 ## Preparations
 To launch the project you'll need several packages to be installed on your system:
 * The Vagrant by it self (https://docs.vagrantup.com/v2/installation/);
