@@ -1,0 +1,11 @@
+{
+  "name": "toolbox",
+  "version": "1.0.0",
+  "author": "Zinovyev Ivan <vanyazin@gmail.com>",
+  "summary": "A base suite of needed packages.",
+  "license": "MIT",
+  "source": "https://github.com/zinovyev/workbox",
+  "project_page": "(https://github.com/zinovyev/workbox)",
+  "issues_url": null,
+  "dependencies": []
+}

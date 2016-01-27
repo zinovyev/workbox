@@ -1,14 +1,25 @@
 # manifests/init.pp
 
 Exec {
-    path => [ '/bin/', '/sbin/' , '/usr/bin/', '/usr/sbin/' ],
-    user => 'root',
+  path => [
+    '/bin/',
+    '/sbin/',
+    '/usr/bin/',
+    '/usr/sbin/',
+    '/usr/local/bin',
+    '/usr/local/sbin',
+    '/opt/puppetlabs/bin',
+  ],
+  user => 'root',
 }
 
 node default {
-    class { 'nginx':
-        version => '1.9.9'
-    }
-    # include nginx
-    # include base3
+
+  class { 'stdlib': }
+  class { 'toolbox': }
+  class { 'mariadb': }
+  class { 'nginx': }
+  class { 'nginx::ssl_nginx':
+    cert_dir => '/etc/nginx/certs',
+  }
 }
