@@ -11,7 +11,20 @@ class nginx::ssl_nginx (
   $subj_unit = 'Example Unit',
   $subj_domain = 'example.org',
   $subj_email = 'name@example.org',
-) inherits ss_ssl {
+) {
+
+  class { 'ss_ssl':
+    cert_dir => $cert_dir,
+    cert_file => $cert_file,
+    cert_key_file => $cert_key_file,
+    subj_country => $subj_country,
+    subj_state => $subj_state,
+    subj_locality => $subj_locality,
+    subj_organization => $subj_organization,
+    subj_unit => $subj_unit,
+    subj_domain => $subj_domain,
+    subj_email => $subj_email,
+  }
 
   # Change cert file permissions
   $cert_path = "${cert_dir}/${cert_file}"
@@ -23,7 +36,7 @@ class nginx::ssl_nginx (
     group   => $nginx::group,
     mode    => "0600",
     require => [
-      Exec["cert_dir_${cert_dir_hash}"],
+      Class["ss_ssl"],
       Class['nginx'],
     ]
   }
@@ -33,7 +46,7 @@ class nginx::ssl_nginx (
     group   => $nginx::group,
     mode    => "0600",
     require => [
-      Exec["cert_dir_${cert_dir_hash}"],
+      Class["ss_ssl"],
       Class['nginx'],
     ],
   }
