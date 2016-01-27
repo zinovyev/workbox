@@ -10,7 +10,7 @@ The list of already built modules:
 * [nginx](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/nginx): compiles Nginx server from sources
 * [nginx_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/nginx): exanple of an nginx config with self-signed certificate on board
 * [openssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/openssl): OpenSSL packages installation
-* [ss_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/ss_ssl): Example of an self-signed certificate
+* [ss_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/ss_ssl): generation of an self-signed certificate
 
 ## Preparations
 To launch the project you'll need several packages to be installed on your system:
