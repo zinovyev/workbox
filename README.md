@@ -8,7 +8,7 @@ The list of already built modules:
 * [toolbox](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/toolbox): provides base packages (some of them are used for building other packages)
 * [mariadb](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/mariadb): MariaDB package installation
 * [nginx](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/nginx): compiles Nginx server from sources
-* [nginx_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/nginx): Example nginx config with an self-signed certificate
+* [nginx_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/nginx): exanple of an nginx config with self-signed certificate on board
 * [openssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/openssl): OpenSSL packages installation
 * [ss_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/ss_ssl): Example of an self-signed certificate
 
