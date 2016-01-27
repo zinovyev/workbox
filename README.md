@@ -6,11 +6,11 @@ This box provides a bunch of puppet modules that I use by myself in my projects.
 In production the modules should be installed via the puppet master node used together with child nodes.
 The list of already built modules:
 * [toolbox](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/toolbox): provides base packages (some of them are used for building other packages)
-* *mariadb*: MariaDB package installation
-* *nginx*: compiles Nginx server from sources
-* *nginx_ssl*: Example nginx config with an self-signed certificate
-* *openssl*: OpenSSL packages installation
-* *ss_ssl*: Example of an self-signed certificate
+* [mariadb](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/mariadb): MariaDB package installation
+* [nginx](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/nginx): compiles Nginx server from sources
+* [nginx_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/nginx): Example nginx config with an self-signed certificate
+* [openssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/openssl): OpenSSL packages installation
+* [ss_ssl](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/ss_ssl): Example of an self-signed certificate
 
 ## Preparations
 To launch the project you'll need several packages to be installed on your system:
