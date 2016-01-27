@@ -5,7 +5,7 @@ This the sample workbox for development based on vagrant and puppet (puppet appl
 This box provides a bunch of puppet modules that I use by myself in my projects. It's not fully complete yet.
 In production the modules should be installed via the puppet master node used together with child nodes.
 The list of already built modules:
-* *toolbox*: provides base packages (some of them are used for building other packages)
+* [toolbox](https://github.com/zinovyev/workbox/tree/master/provision/puppet/environments/testing/modules/toolbox): provides base packages (some of them are used for building other packages)
 * *mariadb*: MariaDB package installation
 * *nginx*: compiles Nginx server from sources
 * *nginx_ssl*: Example nginx config with an self-signed certificate
