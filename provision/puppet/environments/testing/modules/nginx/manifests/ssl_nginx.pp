@@ -2,7 +2,18 @@
 
 include ss_ssl
 
-class nginx::ssl_nginx inherits ss_ssl {
+class nginx::ssl_nginx (
+  $cert_dir = '/etc/ssl/certs',
+  $cert_file = 'local.dev.crt',
+  $cert_key_file = 'local.dev.key',
+  $subj_country = 'RU',
+  $subj_state = 'Moscow',
+  $subj_locality = 'Moscow',
+  $subj_organization = 'Example',
+  $subj_unit = 'Example Unit',
+  $subj_domain = 'example.org',
+  $subj_email = 'name@example.org',
+) inherits ss_ssl {
 
 
   # Change cert file permissions
