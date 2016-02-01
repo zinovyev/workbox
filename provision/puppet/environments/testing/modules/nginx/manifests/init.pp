@@ -141,7 +141,7 @@ class nginx (
     $nginx_options_string = join(concat($nginx_options, $ssl_options, $pcre3_options, $zlib_options), " ")
     exec { 'configure_nginx':
       cwd     => "/tmp/nginx-${version}",
-      command => "sh -c './configure $nginx_options_string'",
+      command => "sh -c './configure ${nginx_options_string}'",
       require => [
         Exec['extract_nginx'],
         File['nginx_error_log'],

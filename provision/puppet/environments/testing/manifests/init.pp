@@ -22,4 +22,5 @@ node default {
   class { 'nginx::ssl_nginx':
     cert_dir => '/etc/nginx/certs',
   }
+  class { 'php5': }
 }
