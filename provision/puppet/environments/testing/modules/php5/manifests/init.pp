@@ -6,18 +6,29 @@ class php5 (
   $group = 'www',
 ) {
 
+  $php5_dependencies = [
+    #    'systemd',
+    #    'libsystemd-dev',
+    'libxml2-dev',
+    'libcurl4-openssl-dev',
+    #    'libssl-dev',
+  ]
+  package { $php5_dependencies:
+    ensure => installed,
+  }
+
   if $is_php5_installed == false {
 
     # Get php5 source
     exec { 'get_php5_source':
       command => "curl http://php.net/distributions/php-${version}.tar.bz2 > php-${version}.tar.bz2",
-      cwd => '/tmp',
+      cwd     => '/tmp',
     }
 
     # Extract sources
     exec { 'extract_php5_source':
       command => "tar xjf php-${version}.tar.bz2",
-      cwd => '/tmp',
+      cwd     => '/tmp',
       require => Exec['get_php5_source'],
     }
 
@@ -29,19 +40,20 @@ class php5 (
       '--enable-fpm',
       "--with-fpm-user=${owner}",
       "--with-fpm-group=${group}",
-#      '--with-fpm-systemd',
-#      '--with-fpm-acl',
-      '--with-openssl',
+      #      '--with-fpm-systemd',
+      #      '--with-fpm-acl',
+      #      '--with-openssl=/usr/include/openssl',
+      #      '--with-system-ciphers',
       '--with-pcre-regex',
       '--with-zlib',
       '--enable-bcmath',
       '--with-curl',
       '--enable-exif',
-      '--with-gd',
-      '--enable-intl',
-      '--with-ldap',
+      #      '--with-gd',
+      #      '--enable-intl',
+      #      '--with-ldap',
       '--enable-mbstring',
-      '--with-mcrypt',
+      #      '--with-mcrypt',
       '--with-mysql',
       '--enable-opcache',
       '--enable-pcntl',
@@ -57,8 +69,29 @@ class php5 (
     $php5_options_string = join($php5_options, " ")
     exec { 'php5_configure':
       command => "sh -c './configure ${php5_options_string}'",
-      cwd => "/tmp/php-${version}",
-      require => Exec['extract_php5_source'],
+      cwd     => "/tmp/php-${version}",
+      require => [
+        Package[$php5_dependencies],
+        Class['openssl'],
+        Exec['extract_php5_source']
+      ],
+    }
+
+    # Make php5
+    exec { 'php5_make':
+      command => 'make',
+      cwd     => "/tmp/php-${version}",
+      require => [
+        Exec['php5_configure']
+      ],
+    }
+
+    exec { 'php5_install':
+      command => 'make install',
+      cwd     => "/tmp/php-${version}",
+      require => [
+        Exec['php5_make']
+      ],
     }
   }
 

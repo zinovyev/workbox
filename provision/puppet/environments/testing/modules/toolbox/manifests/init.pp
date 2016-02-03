@@ -33,6 +33,7 @@ class toolbox {
     'gcc',
     'clang',
     'make',
+    'pkg-config',
   ]
   package { $build_packages:
     ensure => installed

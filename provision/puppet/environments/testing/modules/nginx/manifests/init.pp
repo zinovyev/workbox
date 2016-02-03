@@ -38,7 +38,6 @@ class nginx (
   file { 'nginx_pid_file':
     path    => $pid_file,
     ensure  => 'file',
-    content => "",
     owner   => 'root',
     group   => 'root',
     mode    => '0700',
@@ -54,7 +53,6 @@ class nginx (
   file { 'nginx_error_log':
     path    => $error_log,
     ensure  => 'file',
-    content => "",
     owner   => $owner,
     group   => $group,
     mode    => '0664',
@@ -65,7 +63,6 @@ class nginx (
   file { 'nginx_access_log':
     path    => $access_log,
     ensure  => 'file',
-    content => "",
     owner   => $owner,
     group   => $group,
     mode    => '0664',
