@@ -1,5 +1,7 @@
 # modules/php5/manifests/init.pp
 
+include openssl
+
 class php5 (
   $version = '5.6.17',
   $owner = 'www',
@@ -32,6 +34,14 @@ class php5 (
       require => Exec['get_php5_source'],
     }
 
+    exec { 'clean_php5_build':
+      command => 'make clean',
+      cwd     => "/tmp/php-${version}",
+      require => [
+        Exec['extract_php5_source']
+      ],
+    }
+
     # Configure php5 options
     $php5_options = [
       '--prefix=/usr/local/php5',
@@ -40,20 +50,21 @@ class php5 (
       '--enable-fpm',
       "--with-fpm-user=${owner}",
       "--with-fpm-group=${group}",
-      #      '--with-fpm-systemd',
-      #      '--with-fpm-acl',
-      #      '--with-openssl=/usr/include/openssl',
-      #      '--with-system-ciphers',
+      "--with-readline",
+      #1      '--with-fpm-systemd',
+      #1      '--with-fpm-acl',
+      #1      '--with-openssl=/usr/include/openssl',
+      #1      '--with-system-ciphers',
       '--with-pcre-regex',
       '--with-zlib',
       '--enable-bcmath',
-      '--with-curl',
+      '--with-curl=/usr/include/curl',
       '--enable-exif',
-      #      '--with-gd',
-      #      '--enable-intl',
-      #      '--with-ldap',
+      #1      '--with-gd',
+      #1      '--enable-intl',
+      #1      '--with-ldap',
       '--enable-mbstring',
-      #      '--with-mcrypt',
+      #1      '--with-mcrypt',
       '--with-mysql',
       '--enable-opcache',
       '--enable-pcntl',
@@ -67,11 +78,15 @@ class php5 (
       '--with-tsrm-pthreads',
     ]
     $php5_options_string = join($php5_options, " ")
+    notify { "sh -c './configure ${php5_options_string}'": }
     exec { 'php5_configure':
       command => "sh -c './configure ${php5_options_string}'",
       cwd     => "/tmp/php-${version}",
       require => [
+        Exec['clean_php5_build'],
         Package[$php5_dependencies],
+        Package['libreadline6-dev'],
+        Package['libcurl4-gnutls-dev'],
         Class['openssl'],
         Exec['extract_php5_source']
       ],
@@ -79,7 +94,7 @@ class php5 (
 
     # Make php5
     exec { 'php5_make':
-      command => 'make',
+      command => 'make -j`nproc`',
       cwd     => "/tmp/php-${version}",
       require => [
         Exec['php5_configure']

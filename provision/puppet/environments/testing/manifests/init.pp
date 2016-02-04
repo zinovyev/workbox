@@ -1,7 +1,7 @@
 # manifests/init.pp
 
 Exec {
-  path => [
+  path        => [
     '/bin/',
     '/sbin/',
     '/usr/bin/',
@@ -10,7 +10,8 @@ Exec {
     '/usr/local/sbin',
     '/opt/puppetlabs/bin',
   ],
-  user => 'root',
+  user        => 'root',
+  timeout     => 1800,
 }
 
 node default {

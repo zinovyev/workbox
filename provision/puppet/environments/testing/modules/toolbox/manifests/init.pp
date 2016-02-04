@@ -8,19 +8,20 @@ class toolbox {
     'sudo',
     'ntp',
     'wget',
-    'curl',
     'vim',
     'git',
   ]
-  package { $base_packages:
-    ensure => installed,
-  }
+  package { $base_packages: ensure => installed, }
+
+  # Curl packages
+  package { 'curl': ensure => installed, }
+  package { 'libcurl4-gnutls-dev': ensure => installed, }
 
   # Enable ntp service (to make nfs work well)
   service { 'ntp':
-    name   => 'ntp',
-    ensure => running,
-    enable => true,
+    name    => 'ntp',
+    ensure  => running,
+    enable  => true,
     require => Package[$base_packages],
   }
 
@@ -35,7 +36,9 @@ class toolbox {
     'make',
     'pkg-config',
   ]
-  package { $build_packages:
-    ensure => installed
-  }
+  package { $build_packages: ensure => installed, }
+
+  # Readline support
+  package { 'libreadline6' : ensure => installed }
+  package { 'libreadline6-dev' : ensure => installed }
 }
