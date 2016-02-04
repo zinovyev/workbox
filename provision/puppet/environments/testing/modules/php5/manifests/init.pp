@@ -53,7 +53,7 @@ class php5 (
       "--with-readline",
       #1      '--with-fpm-systemd',
       #1      '--with-fpm-acl',
-      #1      '--with-openssl=/usr/include/openssl',
+      "--with-openssl=/usr/include/openssl",
       #1      '--with-system-ciphers',
       '--with-pcre-regex',
       '--with-zlib',
