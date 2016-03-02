@@ -1,119 +1,71 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-Vagrant.require_version ">= 1.7.0"
-
-# Check for missing plugins
-required_plugins = %w(vagrant-vbguest)
-required_plugins.each do |plugin|
-  unless Vagrant.has_plugin?(plugin)
-    system "vagrant plugin install #{plugin}"
-  end
-end
-
-# Detect the host OS distro
-hostname = 'unknown'
-if "0" == `which pacman &>/dev/null ; echo $?`.strip then
-  hostname = 'archlinux'
-elsif "0" == `which apt-get &>/dev/null ; echo $?`.strip then
-  hostname = 'debian'
-elsif "0" == `which yum &>/dev/null; echo $?`.strip then
-  hostname = 'rhel'
-elsif "0" == `which homebrew &>/dev/null; echo $?`.strip then
-  hostname = 'osx'
-end
-
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 Vagrant.configure(2) do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
 
-  # Greetings message
-  config.vm.post_up_message = <<MESSAGE
-    This configuration uses the NFS for synced folders.
-
-    Before using synced folders backed by NFS,
-    the host machine must have nfsd installed,
-    the NFS server daemon.
-    This comes pre-installed on Mac OS X,
-    and is typically a simple package install on Linux.
-MESSAGE
-
-  # The full path or URL to the VBoxGuestAdditions.iso file (should be downloaded manually).
-  # The additions iso can be downloaded from the url (replace '%{version}' with your version number):
-  # http://download.virtualbox.org/virtualbox/%{version}/VBoxGuestAdditions_%{version}.iso
-  # config.vbguest.iso_path = "/opt/virtualbox/VBoxGuestAdditions_%{version}.iso"
-  if hostname == "archlinux" then
-    config.vbguest.iso_path = "/usr/lib/virtualbox/additions/VBoxGuestAdditions.iso"
-  else
-    print "OS type could not be detected. Failed to install Guest Additions module.\n"
-    exit
-  end
-
-  # Reboot on success
-  config.vbguest.auto_reboot = true
-
-  # Update VirtualBox Guest additions
-  config.vbguest.auto_update = true
-
-  # do NOT download the iso file from a webserver
-  config.vbguest.no_remote = true
-
-  # Configure virtualbox specific settings
-  config.vm.provider "virtualbox" do |vb|
-    vb.name = "workbox"
-    vb.memory = 2048
-    vb.cpus = 2
-  end
-
-  # Every Vagrant development environment requires a box.
-  config.vm.box = "debian/jessie64"
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://atlas.hashicorp.com/search.
+  config.vm.box = "base"
 
   # Disable automatic box update checking. If you disable this, then
-  config.vm.box_check_update = false
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
 
   # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine.
-  config.vm.network "forwarded_port", guest: 80, host: 8040
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  config.vm.network "private_network", ip: "192.168.50.4"
+  # config.vm.network "private_network", ip: "192.168.33.10"
 
-  # Share an additional folder to the guest VM.
-  config.vm.synced_folder "shared", "/vagrant", type: "nfs", :mount_options => ['nolock,vers=3,udp,noatime']
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  # config.vm.network "public_network"
 
-  # Preinstall Puppet via the shell provisioning
-  config.vm.provision "shell" do |shell|
-    shell.inline = <<-SHELL
-      if [[ 0 != `which puppet > /dev/null && echo $?` ]]; then
-        wget http://apt.puppetlabs.com/puppetlabs-release-pc1-jessie.deb && mv puppetlabs-release-pc1-jessie.deb /tmp
-        dpkg -i /tmp/puppetlabs-release-pc1-jessie.deb
-        apt-get update -y
-        apt-get install -y puppetserver
-        if [ ! -d /opt/puppetlabs/bin/ ]; then
-          echo "Failed to install puppet. Directory '/opt/puppetlabs/bin/puppet' does not exist!"; exit 1
-        fi
-      fi
-    SHELL
-  end
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
 
-  # Enable provisioning with Puppet.
-  config.vm.provision "puppet" do |puppet|
-     # Used to determinate that Puppet version installed on guest is >=4.0
-    puppet.environment_path = "provision/puppet/environments"
-    puppet.environment = "testing"
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  # config.vm.provider "virtualbox" do |vb|
+  #   # Display the VirtualBox GUI when booting the machine
+  #   vb.gui = true
+  #
+  #   # Customize the amount of memory on the VM:
+  #   vb.memory = "1024"
+  # end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
 
-    # The puppet path on the guest machine
-    # puppet.temp_dir = ""
+  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
+  # such as FTP and Heroku are also available. See the documentation at
+  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
+  # config.push.define "atlas" do |push|
+  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
+  # end
 
-    # Puppet options
-    puppet.binary_path = "/opt/puppetlabs/bin"
-    puppet.module_path = "provision/puppet/environments/testing/modules"
-    puppet.manifests_path = "provision/puppet/environments/testing/manifests"
-    puppet.manifest_file = "init.pp"
-    puppet.synced_folder_type = "nfs"
-
-  end
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   sudo apt-get update
+  #   sudo apt-get install -y apache2
+  # SHELL
 end
